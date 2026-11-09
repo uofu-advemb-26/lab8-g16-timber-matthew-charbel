@@ -25,9 +25,8 @@ static void PIOx_IRQHandler(void)
     can2040_pio_irq_handler(&cbus);
 }
 
-static void CanSender_task(){
+static void CanSender_task(struct can2040_msg *msg){
     while (true) {
-        // xQueueReceive(outQueue, &msg, portMAX_DELAY);
         msg.id = 0x1;
         msg.dlc = 8;
 
@@ -65,8 +64,7 @@ void canbus_setup(void)
 void main_task(__unused void *params)
 {
     struct can2040_msg msg;
-    // xQueueReceive(msgs, &msg, portMAX_DELAY);
-    // printf("Got message\n");
+    CanSender_task(&msg);
 }
 
 int main(void)
