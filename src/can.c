@@ -8,11 +8,12 @@
 #include <pico/stdlib.h>
 
 static struct can2040 cbus;
-struct OutMessage {
-    char message[9];
-    uint8_t size;
-    uint16_t priority;
-};
+static int count = 0;
+// struct OutMessage {
+//     char message[9];
+//     uint8_t size;
+//     uint16_t priority;
+// };
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 {
@@ -24,13 +25,22 @@ static void PIOx_IRQHandler(void)
     can2040_pio_irq_handler(&cbus);
 }
 
-static void CanSender_task(QueueHandle_t outQueue, struct can2040 bus){
-    struct OutMessage msg;
+static void CanSender_task(){
     while (true) {
-        xQueueReceive(outQueue, &msg, portMAX_DELAY);
-        can2040_transmit(cbus)
+        // xQueueReceive(outQueue, &msg, portMAX_DELAY);
+        msg.id = 0x1;
+        msg.dlc = 8;
+
+        for (int i = 0; i < 8; i++) {
+            msg.data[i] = count;
+        }
+
+        count++;
+        count %= 10;
+        can2040_transmit(&cbus, &msg);
     }
 }
+
 
 void canbus_setup(void)
 {
@@ -49,4 +59,23 @@ void canbus_setup(void)
 
     // Start canbus
     can2040_start(&cbus, sys_clock, bitrate, gpio_rx, gpio_tx);
+}
+
+
+void main_task(__unused void *params)
+{
+    struct can2040_msg msg;
+    // xQueueReceive(msgs, &msg, portMAX_DELAY);
+    // printf("Got message\n");
+}
+
+int main(void)
+{
+    stdio_init_all();
+    canbus_setup();
+    TaskHandle_t task;
+    xTaskCreate(main_task, "MainThread",
+                configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, &task);
+    vTaskStartScheduler();
+    return 0;
 }
