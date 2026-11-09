@@ -1,9 +1,18 @@
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <pico/cyw43_arch.h>
+
 #include <can2040.h>
 #include <hardware/regs/intctrl.h>
 #include <stdio.h>
 #include <pico/stdlib.h>
 
 static struct can2040 cbus;
+struct OutMessage {
+    char message[9];
+    uint8_t size;
+    uint16_t priority;
+};
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 {
@@ -13,6 +22,14 @@ static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *
 static void PIOx_IRQHandler(void)
 {
     can2040_pio_irq_handler(&cbus);
+}
+
+static void CanSender_task(QueueHandle_t outQueue, struct can2040 bus){
+    struct OutMessage msg;
+    while (true) {
+        xQueueReceive(outQueue, &msg, portMAX_DELAY);
+        can2040_transmit(cbus)
+    }
 }
 
 void canbus_setup(void)
