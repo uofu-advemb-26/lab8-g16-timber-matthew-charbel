@@ -27,11 +27,11 @@ static void PIOx_IRQHandler(void)
 
 static void CanSender_task(struct can2040_msg *msg){
     while (true) {
-        msg.id = 0x1;
-        msg.dlc = 8;
+        msg -> id = 0x1;
+        msg -> dlc = 8;
 
         for (int i = 0; i < 8; i++) {
-            msg.data[i] = count;
+            msg -> data[i] = count;
         }
 
         count++;
