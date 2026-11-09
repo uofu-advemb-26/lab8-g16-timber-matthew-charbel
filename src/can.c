@@ -25,19 +25,19 @@ static void PIOx_IRQHandler(void)
     can2040_pio_irq_handler(&cbus);
 }
 
-static void CanSender_task(struct can2040_msg *msg){
-    while (true) {
-        msg -> id = 0x1;
-        msg -> dlc = 8;
+static void canSend(uint8_t id){
+    struct can2040_msg msg;
+    msg.id = id;
+    msg.dlc = 8;
 
-        for (int i = 0; i < 8; i++) {
-            msg -> data[i] = count;
-        }
-
-        count++;
-        count %= 10;
-        can2040_transmit(&cbus, &msg);
+    for (int i = 0; i < 8; i++) {
+        msg.data[i] = count;
     }
+
+    count++;
+    count %= 10;
+    can2040_transmit(&cbus, &msg);
+    
 }
 
 
@@ -63,8 +63,10 @@ void canbus_setup(void)
 
 void main_task(__unused void *params)
 {
-    struct can2040_msg msg;
-    CanSender_task(&msg);
+    while(true){
+        vTaskDelay(pdMS_TO_TICKS(100));
+        canSend(1);
+    }
 }
 
 int main(void)
