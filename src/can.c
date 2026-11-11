@@ -19,9 +19,12 @@ QueueHandle_t receiveQueue;
 
 static void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 {
-    if(notify != CAN2040_NOTIFY_RX) return
+    if(notify != CAN2040_NOTIFY_RX) return;
 
-    xQueueSendToBack(receiveQueue, msg, portMAX_DELAY);
+    // Called from the PIO IRQ, so the ISR-safe queue API must be used.
+    BaseType_t higherPriorityTaskWoken = pdFALSE;
+    xQueueSendToBackFromISR(receiveQueue, msg, &higherPriorityTaskWoken);
+    portYIELD_FROM_ISR(higherPriorityTaskWoken);
 }
 
 static void PIOx_IRQHandler(void)
@@ -95,8 +98,8 @@ int main(void)
     // Comment out one of these on each RP2040 to complete Activity 0.
     xTaskCreate(sender_task, "SenderThread",
                 configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, &sendTask);
-    xTaskCreate(receiver_task, "ReceiverThread",
-                configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, &receiveTask);
+    // xTaskCreate(receiver_task, "ReceiverThread",
+    //             configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, &receiveTask);
     vTaskStartScheduler();
     return 0;
 }
