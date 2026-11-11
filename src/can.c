@@ -79,7 +79,7 @@ void receiver_task(__unused void *params)
     while(true){
         xQueueReceive(receiveQueue, &msg, portMAX_DELAY);
 
-        printf('received message: %.8s \n', msg.data);
+        printf("received message: %.8s\n", (char *)msg.data);
     }
 }
 
