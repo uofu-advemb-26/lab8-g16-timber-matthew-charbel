@@ -35,7 +35,7 @@ static void canSend(uint8_t id){
     msg.dlc = 8;
 
     for (int i = 0; i < 8; i++) {
-        msg.data[i] = count;
+        msg.data[i] = '0' + count;
     }
 
     count++;
@@ -68,6 +68,7 @@ void canbus_setup(void)
 void sender_task(__unused void *params)
 {
     while(true){
+        // Comment out this line for Activity 1.
         vTaskDelay(pdMS_TO_TICKS(100));
         canSend(1);
     }
