@@ -65,7 +65,7 @@ void canbus_setup(void)
 }
 
 
-void main_task(__unused void *params)
+void sender_task(__unused void *params)
 {
     while(true){
         vTaskDelay(pdMS_TO_TICKS(100));
@@ -90,7 +90,9 @@ int main(void)
     canbus_setup();
     TaskHandle_t sendTask;
     TaskHandle_t receiveTask;
-    xTaskCreate(main_task, "MainThread",
+
+    // Comment out one of these on each RP2040 to complete Activity 0.
+    xTaskCreate(sender_task, "SenderThread",
                 configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, &sendTask);
     xTaskCreate(receiver_task, "ReceiverThread",
                 configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1UL, &receiveTask);
