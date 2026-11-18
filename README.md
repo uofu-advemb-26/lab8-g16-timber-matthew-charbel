@@ -1,10 +1,29 @@
-# Renode setup
-The Raspberry Pico needs configuration files for Renode to work properly.
+# Activity 1
 
-* On MacOS, the installation location is `/Applications/Renode.app/Contents/MacOs`
-* On Linux, the location for Debian, Fedora, and Arch is `/opt/renode`
-* On Windows, the location is `C://Program Files/Renode`
+### One Sender, One Receiver
 
-To add the Pico configuration files:
-1. Copy `rp2040_spinlock.py` and `rp2040_divider.py` to the `scripts/pydev` directory of your Renode installation.
-1. Copy `rpi_pico_rp2040_w.repl` to the `platforms/cpus` directory.
+Sender has ID `0x200`.
+
+<img width="2880" height="2160" alt="image" src="https://github.com/user-attachments/assets/4e72e0be-3824-4539-bdd1-ec55c93016aa" />
+
+Console output from receiver:
+
+<img width="985" height="28" alt="image" src="https://github.com/user-attachments/assets/66089c2a-f746-49aa-a51c-9b10202b05cf" />
+
+### Two Senders
+
+In this example, two senders are on the bus with IDs `0x10` and `0x20`.
+
+The difference in voltage levels observed from sender `0x10` is likely due to loose breadboard wiring.
+
+Interestingly, this difference in CANH voltages allows easy identification of the `ACK` bit.
+
+<img width="2880" height="2160" alt="image" src="https://github.com/user-attachments/assets/2d2fc143-00cb-490d-89d9-0fb04c50f3c0" />
+
+# Activity 2
+
+### Two Senders, One Babbling
+
+here we see the `0x10` node babbling (and the diffeerent-voltage-level ACK bit), preventing `0x20` from sending frames.
+
+<img width="2880" height="2160" alt="image" src="https://github.com/user-attachments/assets/155f686b-da9c-4313-b935-49d163434297" />
