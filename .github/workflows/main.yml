@@ -9,7 +9,6 @@ env:
   UNITY_PATH: /usr/local/share/pico/Unity
   CAN_PATH: /usr/local/share/pico/can2040
   OPENOCD_PATH: /usr/share/openocd
-  OPENOCD_PATH: /usr/share/openocd
   PICO_TOOLCHAIN_PATH: /usr/bin
   picotool_DIR: /usr/local/share/pico/picotool
 
